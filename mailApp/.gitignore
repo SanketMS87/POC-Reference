@@ -1,0 +1,16 @@
+target/
+*.class
+*.jar
+*.war
+
+# OAuth2 integration test credentials — never commit real values
+src/test/resources/oauth2-it.properties
+
+
+# IDE / Editor
+.idea/
+.vscode/
+*.iml
+
+# Local testing only
+src/main/webapp/META-INF/context.xml

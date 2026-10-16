@@ -1,1 +1,4 @@
-POC details
+POC details::::::::::::::::::::
+demo@foodielane.com / Demo@123
+demo@rukmini.com / Demo@123.
+ demo@rukmini.com / Demo@123 and admin@rukmini.com / Admin@123 as they
