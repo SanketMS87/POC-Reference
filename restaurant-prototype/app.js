@@ -237,13 +237,14 @@ const RESTAURANTS = [
     m('r26-5', 'Spinach Ricotta Ravioli', 359, true, '🥟', 'Pasta'),
     m('r26-6', 'Eggless Tiramisu', 199, true, '🍮', 'Desserts') ] }
 ];
+RESTAURANTS.push(...EXTRA_RESTAURANTS);
 RESTAURANTS.forEach((r, i) => { r.hue = (i * 36 + 10) % 360; });
 
 const REST_BY_ID = Object.fromEntries(RESTAURANTS.map(r => [r.id, r]));
 const ITEMS = new Map();
 RESTAURANTS.forEach(r => r.menu.forEach(it => ITEMS.set(it.id, { item: it, rest: r })));
 
-const CUISINES = [['Biryani', '🍛'], ['Pizza', '🍕'], ['Burgers', '🍔'], ['North Indian', '🥘'], ['Chinese', '🥡'], ['South Indian', '🥞'], ['Rolls', '🌯'], ['Healthy', '🥗'], ['Desserts', '🍰'], ['Café', '☕'], ['Momos', '🥟'], ['Mexican', '🌮'], ['Japanese', '🍣'], ['Seafood', '🍤'], ['Waffles', '🧇'], ['Thai', '🍜'], ['Gujarati', '🥘'], ['Maharashtrian', '🌶️'], ['Street Food', '🥔'], ['Rajasthani', '🫓'], ['Ice Cream', '🍦'], ['Andhra', '🌶️'], ['Italian', '🍝']];
+const CUISINES = [['Biryani', '🍛'], ['Pizza', '🍕'], ['Burgers', '🍔'], ['North Indian', '🥘'], ['Chinese', '🥡'], ['South Indian', '🥞'], ['Rolls', '🌯'], ['Healthy', '🥗'], ['Desserts', '🍰'], ['Café', '☕'], ['Momos', '🥟'], ['Mexican', '🌮'], ['Japanese', '🍣'], ['Seafood', '🍤'], ['Waffles', '🧇'], ['Thai', '🍜'], ['Gujarati', '🥘'], ['Maharashtrian', '🌶️'], ['Street Food', '🥔'], ['Rajasthani', '🫓'], ['Ice Cream', '🍦'], ['Andhra', '🌶️'], ['Italian', '🍝'], ...EXTRA_CUISINES];
 const EXAMPLES = ['veg pizza under 300', 'fast biryani', 'top rated desserts', 'non veg burger below 200'];
 
 const SLOTS = {

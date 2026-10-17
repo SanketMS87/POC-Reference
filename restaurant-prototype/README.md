@@ -26,7 +26,8 @@ npx serve .
 |---|---|
 | `index.html` | Page shell: header, search, cart drawer, tracking modal. |
 | `styles.css` | Responsive styling. |
-| `app.js` | Mock data, state, smart logic, rendering. |
+| `app.js` | State, smart logic, rendering and the original 26 restaurants (mock data). |
+| `catalog.js` | 100 additional restaurants with 100 new cuisines and 500 dishes (mock data). Loaded before `app.js`. |
 | `README.md` | This document. |
 
 ## User Flow
@@ -52,7 +53,7 @@ flowchart TD
 ## Feature Highlights
 
 ### Discovery (Swiggy / Zomato style)
-- 26 restaurants with distinct menus, including Thai, Gujarati, Maharashtrian, street food, Rajasthani, ice cream, Andhra and Italian specialists.
+- 126 restaurants (ids `r1`-`r126`) with distinct menus. The original 26 include Thai, Gujarati, Maharashtrian, street food, Rajasthani, ice cream, Andhra and Italian specialists; `catalog.js` adds 100 more, each with its own cuisine (Korean, Lebanese, Kerala, Hyderabadi, Sushi, Tacos, Bubble Tea, Mithai, Vegan and more), 5 dishes each. The cuisine strip lists all 123 cuisines and scrolls sideways.
 - Working Explore, Reset filters and offer cards; selecting an offer keeps its code ready as you build your cart.
 - Responsive discovery cards and demo sign-in, with visible keyboard focus and reduced-motion support.
 - Cuisine strip ("What's on your mind?") and restaurant cards with rating, ETA, cost for two, offer ribbon and pure-veg tag.
@@ -106,7 +107,7 @@ The cart holds items from one restaurant at a time. Adding from another restaura
 
 After placing an order, a modal shows four stages: Order placed, Preparing, Out for delivery (with rider name), Delivered. For demo purposes each stage lasts 6 seconds, and the ETA counts down proportionally. Tracking state is derived from the order timestamp, so it survives a page reload.
 
-## Data Model (mock, in `app.js`)
+## Data Model (mock, in `app.js` and `catalog.js`)
 
 ```
 Restaurant { id, name, cuisines[], rating, votes, eta, costForTwo, pureVeg, offers, emoji, menu[] }
@@ -116,6 +117,8 @@ Order      { id, restId, restName, items[], total, saved, placedAt, eta, rider }
 ```
 
 Cart and order history persist in `localStorage` (`fl_cart`, `fl_orders`).
+
+`catalog.js` stores each new restaurant as a compact row (`[name, cuisines, rating, votes, eta, costForTwo, emoji, offers, dishes]`, each dish `[name, price, veg, emoji, category]`) and expands it into the model above. A restaurant is marked pure veg only when every dish is vegetarian. To add more, append rows to `EXTRA_ROWS`; ids, the cuisine strip entry and the bestseller flag are generated. Keep the first cuisine of a row unique.
 
 ## Limitations and Next Steps
 
