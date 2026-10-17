@@ -24,7 +24,7 @@ public final class Mapper {
 
     public static List<String> cuisines(Restaurant r) {
         return Arrays.stream(r.getCuisines().split(","))
-                .map(String::trim)
+                .map(s -> s.trim())
                 .filter(s -> !s.isEmpty())
                 .toList();
     }
@@ -37,7 +37,7 @@ public final class Mapper {
     public static RestaurantDetail detail(Restaurant r) {
         return new RestaurantDetail(r.getId(), r.getName(), cuisines(r), r.getRating(),
                 r.getEtaMinutes(), r.getCostForTwo(), r.isPureVeg(), r.getEmoji(), r.getDescription(),
-                r.getMenu().stream().map(Mapper::menuItem).toList());
+                r.getMenu().stream().map(m -> menuItem(m)).toList());
     }
 
     public static MenuItemDto menuItem(MenuItem m) {

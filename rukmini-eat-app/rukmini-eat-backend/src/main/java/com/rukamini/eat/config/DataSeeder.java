@@ -8,12 +8,14 @@ import com.rukamini.eat.repository.RestaurantRepository;
 import com.rukamini.eat.repository.UserRepository;
 import java.math.BigDecimal;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 /** Loads demo users and restaurants on first start. Demo credentials are for local use only. */
 @Component
+@Profile("local")
 public class DataSeeder implements CommandLineRunner {
 
     private final UserRepository users;

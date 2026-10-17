@@ -1,0 +1,14 @@
+{
+  "name": "Rukmini Eat App",
+  "short_name": "Rukmini",
+  "description": "Order food from your favourite restaurants.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#ff9933",
+  "icons": [
+    { "src": "logo-icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

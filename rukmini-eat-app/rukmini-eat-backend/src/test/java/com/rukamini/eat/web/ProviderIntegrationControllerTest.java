@@ -12,7 +12,7 @@ class ProviderIntegrationControllerTest {
     void providersRemainUnavailableUntilApprovedAdaptersAreImplemented() {
         var statuses = new ProviderIntegrationController().providers();
         assertEquals(List.of("zomato", "swiggy"),
-                statuses.stream().map(ProviderIntegrationController.ProviderStatus::provider).toList());
+                statuses.stream().map(s -> s.provider()).toList());
         statuses.forEach(status -> {
             assertEquals("AWAITING_APPROVED_API_CONTRACT", status.status());
             assertFalse(status.liveData());

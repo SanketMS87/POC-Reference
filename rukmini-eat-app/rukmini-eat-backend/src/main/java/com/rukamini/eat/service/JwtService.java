@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class JwtService {
 
+    public static final String ISSUER = "rukmini-eat";
+
     private final JwtEncoder encoder;
     private final long ttlMinutes;
 
@@ -26,7 +28,7 @@ public class JwtService {
     public String generate(User user) {
         Instant now = Instant.now();
         JwtClaimsSet claims = JwtClaimsSet.builder()
-                .issuer("rukmini-eat")
+                .issuer(ISSUER)
                 .subject(user.getEmail())
                 .issuedAt(now)
                 .expiresAt(now.plus(ttlMinutes, ChronoUnit.MINUTES))

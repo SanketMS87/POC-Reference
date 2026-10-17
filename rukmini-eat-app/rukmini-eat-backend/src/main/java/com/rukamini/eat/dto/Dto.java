@@ -1,5 +1,6 @@
 package com.rukamini.eat.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
@@ -21,12 +22,14 @@ public final class Dto {
 
     // ---- auth ----
     public record RegisterRequest(
-            @NotBlank @Size(max = 80) String name,
-            @NotBlank @Email @Size(max = 160) String email,
-            @NotBlank @Size(min = 6, max = 72) String password) {
+            @Schema(example = "Asha Rao") @NotBlank @Size(max = 80) String name,
+            @Schema(example = "asha@example.com") @NotBlank @Email @Size(max = 160) String email,
+            @Schema(example = "Secret@123") @NotBlank @Size(min = 6, max = 72) String password) {
     }
 
-    public record LoginRequest(@NotBlank String email, @NotBlank String password) {
+    public record LoginRequest(
+            @Schema(example = "demo@rukmini.com") @NotBlank String email,
+            @Schema(example = "Demo@123") @NotBlank String password) {
     }
 
     public record UserDto(Long id, String name, String email, String role) {
@@ -51,7 +54,8 @@ public final class Dto {
     }
 
     // ---- orders ----
-    public record OrderLineRequest(@NotNull Long menuItemId, @Min(1) @Max(20) int quantity) {
+    public record OrderLineRequest(@Schema(example = "1") @NotNull Long menuItemId,
+                                   @Schema(example = "2") @Min(1) @Max(20) int quantity) {
     }
 
     public record OrderRequest(@NotEmpty @Size(max = 50) List<@Valid OrderLineRequest> items) {
@@ -67,20 +71,21 @@ public final class Dto {
 
     // ---- admin ----
     public record RestaurantCreateRequest(
-            @NotBlank @Size(max = 120) String name,
+            @Schema(example = "Masala House") @NotBlank @Size(max = 120) String name,
+            @Schema(example = "North Indian, Tandoor", description = "Comma-separated cuisines")
             @NotBlank @Size(max = 200) String cuisines,
-            @NotNull @DecimalMin("0.0") @DecimalMax("5.0") BigDecimal rating,
-            @Min(5) @Max(180) int etaMinutes,
-            @Min(0) int costForTwo,
+            @Schema(example = "4.5") @NotNull @DecimalMin("0.0") @DecimalMax("5.0") BigDecimal rating,
+            @Schema(example = "30") @Min(5) @Max(180) int etaMinutes,
+            @Schema(example = "500") @Min(0) int costForTwo,
             boolean pureVeg,
             @Size(max = 8) String emoji,
             @Size(max = 300) String description) {
     }
 
     public record MenuItemCreateRequest(
-            @NotBlank @Size(max = 120) String name,
-            @NotBlank @Size(max = 60) String category,
-            @NotNull @DecimalMin("1.0") BigDecimal price,
+            @Schema(example = "Paneer Tikka") @NotBlank @Size(max = 120) String name,
+            @Schema(example = "Starters") @NotBlank @Size(max = 60) String category,
+            @Schema(example = "249.00") @NotNull @DecimalMin("1.0") BigDecimal price,
             boolean veg,
             boolean bestseller,
             @Size(max = 8) String emoji) {

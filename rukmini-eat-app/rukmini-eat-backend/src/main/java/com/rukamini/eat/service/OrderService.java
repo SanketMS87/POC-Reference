@@ -12,11 +12,10 @@ import com.rukamini.eat.repository.MenuItemRepository;
 import com.rukamini.eat.repository.OrderRepository;
 import com.rukamini.eat.repository.UserRepository;
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,14 +43,16 @@ public class OrderService {
 
         Map<Long, Integer> quantities = new LinkedHashMap<>();
         for (OrderLineRequest line : req.items()) {
-            quantities.merge(line.menuItemId(), line.quantity(), Integer::sum);
+            quantities.merge(line.menuItemId(), line.quantity(), (a, b) -> a + b);
         }
         if (quantities.values().stream().anyMatch(q -> q > MAX_QTY_PER_ITEM)) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "Maximum " + MAX_QTY_PER_ITEM + " units per item");
         }
 
-        Map<Long, MenuItem> found = menuItems.findAllById(quantities.keySet()).stream()
-                .collect(Collectors.toMap(MenuItem::getId, Function.identity()));
+        Map<Long, MenuItem> found = new HashMap<>();
+        for (MenuItem item : menuItems.findAllById(quantities.keySet())) {
+            found.put(item.getId(), item);
+        }
         if (found.size() != quantities.size()) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "Some menu items do not exist");
         }
@@ -80,6 +81,6 @@ public class OrderService {
     public List<OrderDto> history(String email) {
         User user = users.findByEmail(email)
                 .orElseThrow(() -> new ApiException(HttpStatus.UNAUTHORIZED, "User not found"));
-        return orders.findByUserIdOrderByCreatedAtDesc(user.getId()).stream().map(Mapper::order).toList();
+        return orders.findByUserIdOrderByCreatedAtDesc(user.getId()).stream().map(o -> Mapper.order(o)).toList();
     }
 }

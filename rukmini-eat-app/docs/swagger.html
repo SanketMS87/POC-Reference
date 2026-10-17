@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rukmini Eat API - Swagger documentation</title>
+  <link rel="stylesheet" href="assets/swagger-ui.css">
+  <style>
+    body { margin: 0; background: #fafafa; }
+    .topnav { display: flex; gap: 16px; align-items: center; padding: 10px 24px; background: #1b1b1b; color: #fff;
+              font: 14px/1.4 system-ui, sans-serif; }
+    .topnav a { color: #9ad1ff; text-decoration: none; }
+    .topnav a:hover { text-decoration: underline; }
+    .topnav .note { margin-left: auto; color: #bbb; }
+    .error { margin: 24px; padding: 16px; border: 1px solid #d33; background: #fee; font: 14px system-ui, sans-serif; }
+  </style>
+</head>
+<body>
+  <nav class="topnav">
+    <strong>Rukmini Eat API</strong>
+    <a href="index.html">Overview</a>
+    <a href="openapi.yaml" download>Download openapi.yaml</a>
+    <span class="note">Read-only reference. Use the live Swagger UI to try requests.</span>
+  </nav>
+  <div id="swagger-ui"></div>
+
+  <script src="assets/openapi-spec.js"></script>
+  <script src="assets/swagger-ui-bundle.js"></script>
+  <script>
+    window.addEventListener('load', function () {
+      if (!window.OPENAPI_YAML) {
+        document.getElementById('swagger-ui').innerHTML =
+          '<div class="error">assets/openapi-spec.js is missing. Run <code>docs/build-html.ps1</code>.</div>';
+        return;
+      }
+      var ui = SwaggerUIBundle({
+        dom_id: '#swagger-ui',
+        spec: {},
+        deepLinking: true,
+        docExpansion: 'list',
+        defaultModelsExpandDepth: 1,
+        // Static page is served from file:// or a different origin, so the backend's CORS rules
+        // would reject requests; the live Swagger UI is the place to execute calls.
+        supportedSubmitMethods: [],
+        presets: [SwaggerUIBundle.presets.apis]
+      });
+      ui.specActions.updateSpec(window.OPENAPI_YAML);
+      ui.specActions.parseToJson(window.OPENAPI_YAML);
+    });
+  </script>
+</body>
+</html>

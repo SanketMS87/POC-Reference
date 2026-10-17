@@ -43,7 +43,7 @@ public class RestaurantService {
                 .filter(r -> cuisineKey.isEmpty() || r.getCuisines().toLowerCase(Locale.ROOT).contains(cuisineKey))
                 .filter(r -> needle.isEmpty() || matches(r, needle))
                 .sorted(comparator(sort))
-                .map(Mapper::summary)
+                .map(r -> Mapper.summary(r))
                 .toList();
     }
 
@@ -82,10 +82,10 @@ public class RestaurantService {
     private Comparator<Restaurant> comparator(String sort) {
         String key = sort == null ? "relevance" : sort;
         return switch (key) {
-            case "rating" -> Comparator.comparingDouble(Restaurant::getRating).reversed();
-            case "eta" -> Comparator.comparingInt(Restaurant::getEtaMinutes);
-            case "costLow" -> Comparator.comparingInt(Restaurant::getCostForTwo);
-            case "costHigh" -> Comparator.comparingInt(Restaurant::getCostForTwo).reversed();
+            case "rating" -> Comparator.comparingDouble((Restaurant r) -> r.getRating()).reversed();
+            case "eta" -> Comparator.comparingInt((Restaurant r) -> r.getEtaMinutes());
+            case "costLow" -> Comparator.comparingInt((Restaurant r) -> r.getCostForTwo());
+            case "costHigh" -> Comparator.comparingInt((Restaurant r) -> r.getCostForTwo()).reversed();
             default -> Comparator.comparingDouble((Restaurant r) -> -(r.getRating() * 2 - r.getEtaMinutes() / 15.0));
         };
     }
