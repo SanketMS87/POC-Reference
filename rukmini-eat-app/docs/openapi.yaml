@@ -1,0 +1,625 @@
+openapi: 3.1.0
+info:
+  title: Rukmini Eat API
+  description: |
+    Restaurant discovery, local ordering, and admin APIs. Log in or register to obtain a JWT, then use **Authorize**. Provider integrations (Zomato/Swiggy) are not connected.
+
+    ## Frontend routes
+    The Angular app runs at `http://localhost:4200`. Its routes are screens, not REST endpoints; they call the backend operations below.
+
+    | Frontend route | Screen | Backend operations |
+    |---|---|---|
+    | `/login` | Sign in / create account (guests only) | `POST /api/auth/login`, `POST /api/auth/register` |
+    | `/restaurants` | Dashboard, search, filters, sorting | `GET /api/restaurants` |
+    | `/restaurants/:id` | Restaurant menu | `GET /api/restaurants/{id}` |
+    | `/cart` | Cart and checkout | `POST /api/orders` |
+    | `/orders` | Order history | `GET /api/orders` |
+    | `/` or unknown route | Redirects to `/restaurants` | None |
+
+    All routes except `/login` require sign-in. No frontend screens exist for the administration or provider-integration operations; use this Swagger UI.
+  version: v1
+servers:
+- url: http://localhost:8080/rukmini-eat
+  description: Generated server url
+security:
+- bearerAuth: []
+tags:
+- name: Administration
+  description: Requires a JWT with the ADMIN role.
+paths:
+  /api/orders:
+    get:
+      tags:
+      - Orders
+      summary: "List the signed-in customer's orders, newest first"
+      operationId: history
+      responses:
+        "200":
+          description: Orders for the signed-in customer; empty list when none
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OrderDto"
+        "401":
+          description: "Missing, invalid, or expired token"
+    post:
+      tags:
+      - Orders
+      summary: Place a local order
+      description: Items must belong to one restaurant. Maximum 20 units per item
+        and 50 request lines. Prices and fees are recalculated on the server; orders
+        are not sent to external providers.
+      operationId: place
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderRequest"
+        required: true
+      responses:
+        "201":
+          description: Order placed with server-calculated totals
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/OrderDto"
+        "400":
+          description: "Invalid request, unknown menu item, quantity over 20, or items\
+            \ from multiple restaurants"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "401":
+          description: "Missing, invalid, or expired token"
+  /api/auth/register:
+    post:
+      tags:
+      - Authentication
+      summary: Create a customer account and return a JWT
+      operationId: register
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+        required: true
+      responses:
+        "429":
+          description: Too many attempts from this address; see Retry-After
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "201":
+          description: Account created; token and user returned
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "400":
+          description: Invalid input
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "409":
+          description: Email is already registered
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+      security: []
+  /api/auth/login:
+    post:
+      tags:
+      - Authentication
+      summary: Log in and return a JWT
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+        required: true
+      responses:
+        "429":
+          description: Too many attempts from this address; see Retry-After
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "200":
+          description: Login succeeded; token and user returned
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "400":
+          description: Invalid input
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "401":
+          description: Invalid email or password
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+      security: []
+  /api/admin/restaurants:
+    post:
+      tags:
+      - Administration
+      summary: Create a restaurant (ADMIN)
+      operationId: create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RestaurantCreateRequest"
+        required: true
+      responses:
+        "201":
+          description: Restaurant created
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/RestaurantSummary"
+        "400":
+          description: Invalid input
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "401":
+          description: "Missing, invalid, or expired token"
+        "403":
+          description: Signed-in user is not an ADMIN
+  /api/admin/restaurants/{id}/menu-items:
+    post:
+      tags:
+      - Administration
+      summary: Add a menu item to a restaurant (ADMIN)
+      operationId: addMenuItem
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MenuItemCreateRequest"
+        required: true
+      responses:
+        "201":
+          description: Menu item added
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/MenuItemDto"
+        "400":
+          description: Invalid input
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "401":
+          description: "Missing, invalid, or expired token"
+        "403":
+          description: Signed-in user is not an ADMIN
+        "404":
+          description: Restaurant not found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+  /api/restaurants:
+    get:
+      tags:
+      - Restaurants
+      summary: Search and filter restaurants
+      operationId: list
+      parameters:
+      - name: q
+        in: query
+        description: "Search restaurant names, cuisines, or menu item names"
+        required: false
+        schema:
+          type: string
+      - name: cuisine
+        in: query
+        description: "Cuisine substring, case-insensitive"
+        required: false
+        schema:
+          type: string
+      - name: vegOnly
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+      - name: topRated
+        in: query
+        description: Only restaurants rated at least 4.3
+        required: false
+        schema:
+          type: boolean
+          default: false
+      - name: fast
+        in: query
+        description: Only restaurants with an ETA of 25 minutes or less
+        required: false
+        schema:
+          type: boolean
+          default: false
+      - name: sort
+        in: query
+        required: false
+        schema:
+          type: string
+          default: relevance
+          enum:
+          - relevance
+          - rating
+          - eta
+          - costLow
+          - costHigh
+      responses:
+        "200":
+          description: Matching restaurants; empty list when none match
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RestaurantSummary"
+        "401":
+          description: "Missing, invalid, or expired token"
+  /api/restaurants/{id}:
+    get:
+      tags:
+      - Restaurants
+      summary: Get a restaurant and its menu
+      operationId: get
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Restaurant with menu items
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/RestaurantDetail"
+        "401":
+          description: "Missing, invalid, or expired token"
+        "404":
+          description: Restaurant not found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ApiError"
+  /api/integrations/providers:
+    get:
+      tags:
+      - Provider integrations
+      summary: Get provider integration readiness
+      description: "Static implementation status, not a provider health check. Live\
+        \ data and real ordering remain disabled."
+      operationId: providers
+      responses:
+        "200":
+          description: Zomato and Swiggy readiness status
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProviderStatus"
+        "401":
+          description: "Missing, invalid, or expired token"
+components:
+  schemas:
+    OrderLineRequest:
+      type: object
+      properties:
+        menuItemId:
+          type: integer
+          format: int64
+          example: 1
+        quantity:
+          type: integer
+          format: int32
+          example: 2
+          maximum: 20
+          minimum: 1
+      required:
+      - menuItemId
+    OrderRequest:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderLineRequest"
+          maxItems: 50
+          minItems: 0
+      required:
+      - items
+    ApiError:
+      type: object
+      description: Application validation or business error
+      properties:
+        message:
+          type: string
+          example: Invalid email or password
+    OrderDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        restaurantName:
+          type: string
+        status:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderLineDto"
+        subtotal:
+          type: number
+        deliveryFee:
+          type: number
+        tax:
+          type: number
+        platformFee:
+          type: number
+        total:
+          type: number
+        createdAt:
+          type: string
+          format: date-time
+    OrderLineDto:
+      type: object
+      properties:
+        name:
+          type: string
+        price:
+          type: number
+        quantity:
+          type: integer
+          format: int32
+    RegisterRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Asha Rao
+          maxLength: 80
+          minLength: 0
+        email:
+          type: string
+          format: email
+          example: asha@example.com
+          maxLength: 160
+          minLength: 0
+        password:
+          type: string
+          example: Secret@123
+          maxLength: 72
+          minLength: 6
+      required:
+      - email
+      - name
+      - password
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        user:
+          $ref: "#/components/schemas/UserDto"
+    UserDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          example: demo@rukmini.com
+          minLength: 1
+        password:
+          type: string
+          example: Demo@123
+          minLength: 1
+      required:
+      - email
+      - password
+    RestaurantCreateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Masala House
+          maxLength: 120
+          minLength: 0
+        cuisines:
+          type: string
+          description: Comma-separated cuisines
+          example: "North Indian, Tandoor"
+          maxLength: 200
+          minLength: 0
+        rating:
+          type: number
+          example: 4.5
+          maximum: 5.0
+          minimum: 0.0
+        etaMinutes:
+          type: integer
+          format: int32
+          example: 30
+          maximum: 180
+          minimum: 5
+        costForTwo:
+          type: integer
+          format: int32
+          example: 500
+          minimum: 0
+        pureVeg:
+          type: boolean
+        emoji:
+          type: string
+          maxLength: 8
+          minLength: 0
+        description:
+          type: string
+          maxLength: 300
+          minLength: 0
+      required:
+      - cuisines
+      - name
+      - rating
+    RestaurantSummary:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        cuisines:
+          type: array
+          items:
+            type: string
+        rating:
+          type: number
+          format: double
+        etaMinutes:
+          type: integer
+          format: int32
+        costForTwo:
+          type: integer
+          format: int32
+        pureVeg:
+          type: boolean
+        emoji:
+          type: string
+        description:
+          type: string
+    MenuItemCreateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Paneer Tikka
+          maxLength: 120
+          minLength: 0
+        category:
+          type: string
+          example: Starters
+          maxLength: 60
+          minLength: 0
+        price:
+          type: number
+          example: 249.0
+          minimum: 1.0
+        veg:
+          type: boolean
+        bestseller:
+          type: boolean
+        emoji:
+          type: string
+          maxLength: 8
+          minLength: 0
+      required:
+      - category
+      - name
+      - price
+    MenuItemDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        category:
+          type: string
+        price:
+          type: number
+        veg:
+          type: boolean
+        bestseller:
+          type: boolean
+        emoji:
+          type: string
+    RestaurantDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        cuisines:
+          type: array
+          items:
+            type: string
+        rating:
+          type: number
+          format: double
+        etaMinutes:
+          type: integer
+          format: int32
+        costForTwo:
+          type: integer
+          format: int32
+        pureVeg:
+          type: boolean
+        emoji:
+          type: string
+        description:
+          type: string
+        menu:
+          type: array
+          items:
+            $ref: "#/components/schemas/MenuItemDto"
+    ProviderStatus:
+      type: object
+      properties:
+        provider:
+          type: string
+        status:
+          type: string
+        liveData:
+          type: boolean
+        realOrdering:
+          type: boolean
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

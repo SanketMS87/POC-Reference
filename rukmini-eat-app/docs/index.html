@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rukmini Eat - API documentation</title>
+  <style>
+    :root { --fg: #1f2328; --muted: #59636e; --line: #d1d9e0; --accent: #0969da; --bg: #f6f8fa; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font: 15px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; color: var(--fg); background: #fff; }
+    header { background: #1b1b1b; color: #fff; padding: 28px 24px; }
+    header h1 { margin: 0 0 6px; font-size: 26px; }
+    header p { margin: 0; color: #c9d1d9; }
+    main { max-width: 1040px; margin: 0 auto; padding: 8px 24px 48px; }
+    h2 { margin: 36px 0 12px; padding-bottom: 6px; border-bottom: 1px solid var(--line); font-size: 20px; }
+    a { color: var(--accent); }
+    table { width: 100%; border-collapse: collapse; margin: 8px 0 4px; font-size: 14px; }
+    th, td { text-align: left; padding: 8px 10px; border: 1px solid var(--line); vertical-align: top; }
+    th { background: var(--bg); }
+    code { background: var(--bg); padding: 1px 5px; border-radius: 4px; font: 13px ui-monospace, Consolas, monospace; }
+    pre { background: var(--bg); padding: 12px 14px; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; padding: 0; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-top: 18px; }
+    .card { border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; background: #fff; }
+    .card h3 { margin: 0 0 4px; font-size: 16px; }
+    .card p { margin: 0 0 8px; color: var(--muted); }
+    .btn { display: inline-block; padding: 6px 12px; border-radius: 6px; background: var(--accent); color: #fff; text-decoration: none; font-size: 14px; }
+    .m { display: inline-block; min-width: 46px; text-align: center; padding: 1px 6px; border-radius: 4px; color: #fff; font: 600 12px ui-monospace, Consolas, monospace; }
+    .get { background: #1a7f37; } .post { background: #0969da; }
+    .pub { color: #1a7f37; font-weight: 600; } .auth { color: #9a6700; font-weight: 600; } .adm { color: #cf222e; font-weight: 600; }
+    footer { color: var(--muted); font-size: 13px; padding: 16px 24px 32px; text-align: center; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Rukmini Eat API documentation</h1>
+    <p>Restaurant discovery, local ordering and admin APIs - Spring Boot backend and Angular frontend.</p>
+  </header>
+
+  <main>
+    <div class="cards">
+      <div class="card">
+        <h3>Swagger reference (offline)</h3>
+        <p>Every endpoint, schema and example, rendered from <code>openapi.yaml</code>. No server needed.</p>
+        <a class="btn" href="swagger.html">Open Swagger reference</a>
+      </div>
+      <div class="card">
+        <h3>Live Swagger UI</h3>
+        <p>Try requests against the running backend, with JWT authorization.</p>
+        <a class="btn" href="http://localhost:8080/rukmini-eat/swagger-ui/index.html">Open live Swagger UI</a>
+      </div>
+      <div class="card">
+        <h3>OpenAPI file</h3>
+        <p>Import into Postman, Insomnia or code generators.</p>
+        <a class="btn" href="openapi.yaml" download>Download openapi.yaml</a>
+      </div>
+    </div>
+
+    <h2>Base URLs</h2>
+    <table>
+      <tr><th>Service</th><th>URL</th></tr>
+      <tr><td>Backend API</td><td><code>http://localhost:8080/rukmini-eat/api</code></td></tr>
+      <tr><td>OpenAPI JSON / YAML (live)</td><td><code>http://localhost:8080/rukmini-eat/v3/api-docs</code> and <code>/v3/api-docs.yaml</code></td></tr>
+      <tr><td>Frontend (Angular)</td><td><code>http://localhost:4200</code></td></tr>
+    </table>
+
+    <h2>Backend endpoints</h2>
+    <p>Paths are relative to <code>http://localhost:8080/rukmini-eat</code>.</p>
+    <table>
+      <tr><th>Method</th><th>Path</th><th>Access</th><th>Request</th><th>Responses</th></tr>
+      <tr><td><span class="m post">POST</span></td><td><code>/api/auth/register</code></td><td class="pub">Public</td><td><code>{name, email, password}</code></td><td>201 token + user; 400; 409 duplicate email; 429 too many attempts</td></tr>
+      <tr><td><span class="m post">POST</span></td><td><code>/api/auth/login</code></td><td class="pub">Public</td><td><code>{email, password}</code></td><td>200 token + user; 400; 401; 429 too many attempts</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/restaurants</code></td><td class="auth">Authenticated</td><td>Query: <code>q</code>, <code>cuisine</code>, <code>vegOnly</code>, <code>topRated</code>, <code>fast</code>, <code>sort</code></td><td>200 restaurant summaries; 401</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/restaurants/{id}</code></td><td class="auth">Authenticated</td><td>Path: <code>id</code></td><td>200 restaurant + menu; 401; 404</td></tr>
+      <tr><td><span class="m post">POST</span></td><td><code>/api/orders</code></td><td class="auth">Authenticated</td><td><code>{items: [{menuItemId, quantity}]}</code></td><td>201 order with server-calculated totals; 400; 401</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/orders</code></td><td class="auth">Authenticated</td><td>None</td><td>200 own orders, newest first; 401</td></tr>
+      <tr><td><span class="m post">POST</span></td><td><code>/api/admin/restaurants</code></td><td class="adm">ADMIN</td><td><code>{name, cuisines, rating, etaMinutes, costForTwo, pureVeg, emoji?, description?}</code></td><td>201 restaurant summary; 400; 401; 403</td></tr>
+      <tr><td><span class="m post">POST</span></td><td><code>/api/admin/restaurants/{id}/menu-items</code></td><td class="adm">ADMIN</td><td><code>{name, category, price, veg, bestseller, emoji?}</code></td><td>201 menu item; 400; 401; 403; 404</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/integrations/providers</code></td><td class="auth">Authenticated</td><td>None</td><td>200 static readiness status; 401</td></tr>
+    </table>
+
+    <h2>Frontend routes</h2>
+    <p>The Angular app at <code>http://localhost:4200</code> is not a REST server; its routes render screens that call the backend.</p>
+    <table>
+      <tr><th>Route</th><th>Screen</th><th>Access</th><th>Backend calls</th></tr>
+      <tr><td><code>/login</code></td><td>Sign in / create account</td><td>Guests only</td><td><code>POST /api/auth/login</code>, <code>POST /api/auth/register</code></td></tr>
+      <tr><td><code>/restaurants</code></td><td>Dashboard, search, filters, sorting</td><td>Signed in</td><td><code>GET /api/restaurants</code></td></tr>
+      <tr><td><code>/restaurants/:id</code></td><td>Restaurant menu</td><td>Signed in</td><td><code>GET /api/restaurants/{id}</code></td></tr>
+      <tr><td><code>/cart</code></td><td>Cart and checkout (cart is held in the browser)</td><td>Signed in</td><td><code>POST /api/orders</code></td></tr>
+      <tr><td><code>/orders</code></td><td>Order history</td><td>Signed in</td><td><code>GET /api/orders</code></td></tr>
+      <tr><td><code>/</code> or unknown</td><td>Redirects to <code>/restaurants</code> (or <code>/login</code> when signed out)</td><td>-</td><td>None</td></tr>
+    </table>
+    <p>There are no frontend screens for the administration or provider-integration operations; use the live Swagger UI.</p>
+
+    <h2>Authentication</h2>
+    <ol>
+      <li>Call <code>POST /api/auth/login</code> (demo customer <code>demo@rukmini.com</code> / <code>Demo@123</code>, demo admin <code>admin@rukmini.com</code> / <code>Admin@123</code>; local profile only).</li>
+      <li>Copy the <code>token</code> from the response.</li>
+      <li>Send it on protected calls as a bearer token:</li>
+    </ol>
+    <pre><code>Authorization: Bearer &lt;token&gt;</code></pre>
+    <p>In the live Swagger UI, click <strong>Authorize</strong> and paste only the token. Tokens expire after about an hour. Registration always creates a customer account.</p>
+
+    <h2>Errors</h2>
+    <table>
+      <tr><th>Status</th><th>Meaning</th></tr>
+      <tr><td>400</td><td>Invalid input or business rule (unknown menu item, quantity over 20, items from several restaurants). Body: <code>{"message": "..."}</code></td></tr>
+      <tr><td>401</td><td>Missing, invalid or expired token, or wrong login credentials</td></tr>
+      <tr><td>403</td><td>Customer token used on an <code>ADMIN</code> operation</td></tr>
+      <tr><td>404</td><td>Unknown restaurant</td></tr>
+      <tr><td>409</td><td>Email already registered</td></tr>
+      <tr><td>429</td><td>Too many login/registration attempts from one address; wait for the <code>Retry-After</code> seconds</td></tr>
+    </table>
+    <p>Security-layer 401/403 responses can have an empty body.</p>
+  </main>
+
+  <footer>
+    Generated documentation. Source of truth: <code>openapi.yaml</code>. The offline reference bundles Swagger UI 5.32.2 (Apache License 2.0).
+  </footer>
+</body>
+</html>

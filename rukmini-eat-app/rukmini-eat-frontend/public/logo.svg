@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" aria-label="Rukmini Eat App">
+  <defs>
+    <linearGradient id="o" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFB627"/>
+      <stop offset=".5" stop-color="#FF9933"/>
+      <stop offset="1" stop-color="#E8470C"/>
+    </linearGradient>
+    <linearGradient id="o2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FF9933"/>
+      <stop offset="1" stop-color="#D93A0B"/>
+    </linearGradient>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2E8B2E"/>
+      <stop offset="1" stop-color="#14532D"/>
+    </linearGradient>
+  </defs>
+
+  <!-- speed lines -->
+  <rect x="20" y="112" width="112" height="13" rx="6.5" fill="url(#o)"/>
+  <rect x="44" y="138" width="88" height="13" rx="6.5" fill="url(#o)"/>
+  <rect x="68" y="164" width="64" height="13" rx="6.5" fill="url(#o)"/>
+  <circle cx="34" cy="150" r="7" fill="#FF9933"/>
+
+  <!-- R body and leg -->
+  <path d="M128 252 V66 C128 46 142 34 162 34 H238 C296 34 326 70 326 112 C326 150 300 182 258 190 L196 190 L158 252 Z" fill="url(#o)"/>
+  <path d="M168 178 C222 150 300 190 372 262 C318 238 262 222 212 246 C196 254 182 258 168 258 Z" fill="url(#o2)"/>
+
+  <!-- cloche and steam -->
+  <path d="M205 128 C205 98 227 82 250 82 C273 82 295 98 295 128 Z" fill="#fff"/>
+  <circle cx="250" cy="77" r="6" fill="#fff"/>
+  <rect x="196" y="132" width="108" height="8" rx="4" fill="#fff"/>
+  <path d="M238 68 C230 58 246 52 238 42" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <path d="M258 68 C250 58 266 52 258 42" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round"/>
+
+  <!-- spoon -->
+  <ellipse cx="205" cy="208" rx="17" ry="28" transform="rotate(-30 205 208)" fill="#fff"/>
+  <path d="M214 230 L252 264" stroke="#fff" stroke-width="9" stroke-linecap="round"/>
+
+  <!-- leaves -->
+  <path d="M112 70 C92 36 112 8 160 4 C164 44 146 70 112 70 Z" fill="url(#g)"/>
+  <path d="M116 66 C128 46 140 28 156 12" stroke="#fff" stroke-opacity=".6" stroke-width="2" fill="none"/>
+  <path d="M160 48 C158 26 178 10 206 8 C208 32 190 50 160 48 Z" fill="url(#g)"/>
+  <path d="M262 196 C288 176 332 180 352 212 C322 228 280 224 262 196 Z" fill="url(#g)"/>
+
+  <!-- wordmark -->
+  <text x="200" y="338" text-anchor="middle" font-family="Poppins, 'Segoe UI', Arial, sans-serif" font-weight="800" font-size="86" letter-spacing="-2" fill="#14532D">Rukmini</text>
+  <path d="M338 276 C340 262 352 256 366 258 C364 272 354 280 338 276 Z" fill="url(#g)"/>
+  <line x1="48" y1="378" x2="108" y2="378" stroke="#FF9933" stroke-width="2.5"/>
+  <text x="200" y="386" text-anchor="middle" font-family="Poppins, 'Segoe UI', Arial, sans-serif" font-weight="700" font-size="24" letter-spacing="8" fill="#F26A10">EAT APP</text>
+  <line x1="292" y1="378" x2="352" y2="378" stroke="#FF9933" stroke-width="2.5"/>
+</svg>

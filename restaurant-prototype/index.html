@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#fbf7ef">
+  <meta name="description" content="Discover Bengaluru's local favourites with Rukamini. Explore delicious menus, find your next craving and try our interactive food-ordering prototype.">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'">
+  <title>Rukamini Restaurant - Smart Restaurant Prototype</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#app">Skip to main content</a>
+  <header class="topbar">
+    <div class="brand" data-action="home" role="button" tabindex="0"><span class="brand-icon">R.</span> Rukmini <span>eat well. feel good.</span></div>
+    <div class="loc">📍 Deliver to <b>Home</b> · Bengaluru</div>
+    <div class="search">
+      <input id="q" type="search" placeholder="Try: veg pizza under 300, fast biryani, desserts" autocomplete="off" aria-label="Search restaurants and dishes">
+      <div id="sugg" class="sugg" hidden></div>
+    </div>
+    <button id="accountBtn" class="account-btn" data-action="login">Log in</button>
+    <button id="cartBtn" class="cart-btn" data-action="openCart">🛒 Cart <span id="cartCount" class="count" hidden>0</span></button>
+  </header>
+
+  <details class="provider-notice">
+    <summary>Demo restaurants &middot; Zomato / Swiggy not connected</summary>
+    <p>All restaurants, menus, prices and orders shown here are demo data, not live Zomato or Swiggy listings. Approved provider access and a verified server-side adapter are required before connecting either service. No real orders or payments are sent.</p>
+  </details>
+  <main id="app" tabindex="-1"></main>
+  <footer class="site-footer"><div class="brand">Rukmini EAT<span> made for your cravings.</span></div><p>Good food. Local favourites. A little joy in every order.</p><small>Interactive prototype · Bengaluru · No real orders or payments</small></footer>
+
+  <div id="scrim" class="scrim" data-action="closeCart" hidden></div>
+  <aside id="drawer" class="drawer" aria-label="Cart"></aside>
+
+  <div id="modal" class="modal" hidden></div>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="catalog.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

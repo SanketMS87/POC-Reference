@@ -1,1 +1,42 @@
-POC details
+POC details::::::::::::::::::::
+demo@foodielane.com / Demo@123
+demo@rukmini.com / Demo@123.
+ demo@rukmini.com / Demo@123 and admin@rukmini.com / Admin@123 as they
+
+
+To test your application with curl while bypassing the proxy, use the --noproxy option.
+
+Test a specific application URL
+curl.exe --noproxy "*" -v http://localhost:8080/
+
+
+For a health endpoint:
+
+curl.exe --noproxy "*" -v http://localhost:8080/actuator/health
+
+HTTPS application
+curl.exe --noproxy "*" -v https://your-application-url/
+
+
+If the test environment uses a self-signed/untrusted certificate:
+
+curl.exe --noproxy "*" -k -v https://your-application-url/
+
+If proxy variables are configured
+
+In PowerShell, first check them:
+
+Get-ChildItem Env: | Where-Object Name -Match 'proxy'
+
+
+Then test explicitly without proxy:
+
+curl.exe --noproxy "*" -v https://your-application-url/
+
+
+Recommended command for your case:
+
+curl.exe --noproxy "*" -v <APPLICATION_URL>
+
+
+--noproxy "*" tells curl not to use a proxy for any destination, while -v shows connection details that are useful for troubleshooting.
